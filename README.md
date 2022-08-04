@@ -1,1 +1,1 @@
-# data-analysis-with-pooria
+run the main.exe file
