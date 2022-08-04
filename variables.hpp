@@ -6,7 +6,7 @@
     const std::string inputFileName = "input.csv";
     const std::string outputFileName = "output.csv";
     const std::string resultFileName = "result.csv";
-    const int maxRows{1'000'00};
+    const int maxRows{1'000'000};
     const int maxColumns{20};
     std::array<std::string, maxColumns> csvHeaders{};
     int rows;
