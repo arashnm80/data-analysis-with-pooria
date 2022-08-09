@@ -1,3 +1,5 @@
+// last edit: 2022-08-05
+
 std::string getOsName(){
     #ifdef _WIN32
         return "Windows 32-bit";

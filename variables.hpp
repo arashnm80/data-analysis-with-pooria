@@ -21,10 +21,13 @@
     int lowCsvColumn;
     int closeCsvColumn;
     int volumeCsvColumn;
+    int transactionsCount = 0; // to-do: if errors happened change it back to double
+    int goodTransactionsCount = 0;
+    int badTransactionsCount = 0;
+    double successRate = 0;
     double upMargin = 0.04;
     double downMargin = 0.02;
     double sum = 0;
     double average = 0;
-    double transactionCount = 0;
 
 #endif

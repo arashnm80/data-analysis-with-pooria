@@ -8,6 +8,7 @@ void initializeVariables();
 void getHeaders(string& firstLine);
 void logic1(double** doubleArray);
 void logic2(double** doubleArray);
+void printSummary();
 
 int main(){
     // optional function to change some variables
@@ -146,6 +147,9 @@ void logic1(double** doubleArray){
     result.open(filesPath + resultFileName);
 
     // check this logic for all items
+    sum = 0;
+    goodTransactionsCount = 0;
+    badTransactionsCount = 0;
     result << "status,enter row,exit row,enter price,exit price,difference" << endl;
     for(int row{N}; row < rows; row++){
         double maxHigh = doubleArray[row - N][highCsvColumn];
@@ -165,13 +169,13 @@ void logic1(double** doubleArray){
                     && doubleArray[i][closeCsvColumn] > doubleArray[row][closeCsvColumn]){
                     result << "+," << row << ',' << i << ',' << doubleArray[row][closeCsvColumn] << ',' << doubleArray[i][closeCsvColumn] << ',' << doubleArray[i][closeCsvColumn] - doubleArray[row][closeCsvColumn] << endl;
                     sum += doubleArray[i][closeCsvColumn] - doubleArray[row][closeCsvColumn];
-                    transactionCount++;
+                    goodTransactionsCount++;
                     break;
                 }else if(doubleArray[i][closeCsvColumn] < minLow * (1 - downMargin)
                     && doubleArray[i][closeCsvColumn] < doubleArray[row][closeCsvColumn]){
                     result << "-," << row << ',' << i << ',' << doubleArray[row][closeCsvColumn] << ',' << doubleArray[i][closeCsvColumn] << ',' << doubleArray[i][closeCsvColumn] - doubleArray[row][closeCsvColumn] << endl;
                     sum += doubleArray[i][closeCsvColumn] - doubleArray[row][closeCsvColumn];
-                    transactionCount++;
+                    badTransactionsCount++;
                     break;
                 }
             }
@@ -179,11 +183,7 @@ void logic1(double** doubleArray){
     }
     
     // print summary to console:
-    average = sum / transactionCount;
-    cout << endl << "summary:" << endl;
-    cout << "sum: " << sum << endl
-            << "average: " << average << endl
-            << "transactionCount: " << transactionCount << endl;
+    printSummary();
     
     // copy input to output with a little or no change
     output << "index";
@@ -214,6 +214,9 @@ void logic2(double** doubleArray){
     result.open(filesPath + resultFileName);
 
     // check this logic for all items
+    sum = 0;
+    goodTransactionsCount = 0;
+    badTransactionsCount = 0;
     result << "status,enter row,exit row,enter price,exit price,difference" << endl;
     for(int row{N}; row < rows; row++){
         double maxHigh = doubleArray[row - N][highCsvColumn];
@@ -234,14 +237,14 @@ void logic2(double** doubleArray){
                     result << "+," << row << ',' << i << ',' << doubleArray[row][closeCsvColumn] << ',' << doubleArray[i][closeCsvColumn] << ',' << doubleArray[i][closeCsvColumn] - doubleArray[row][closeCsvColumn] << endl;
                     row = i + 1; // all of difference bewteen logic 2 and 1 is in this part which is written 2 times in this for loop
                     sum += doubleArray[i][closeCsvColumn] - doubleArray[row][closeCsvColumn];
-                    transactionCount++;
+                    goodTransactionsCount++;
                     break;
                 }else if(doubleArray[i][closeCsvColumn] < minLow * (1 - downMargin)
                     && doubleArray[i][closeCsvColumn] < doubleArray[row][closeCsvColumn]){
                     result << "-," << row << ',' << i << ',' << doubleArray[row][closeCsvColumn] << ',' << doubleArray[i][closeCsvColumn] << ',' << doubleArray[i][closeCsvColumn] - doubleArray[row][closeCsvColumn] << endl;
                     row = i + 1; // all of difference bewteen logic 2 and 1 is in this part which is written 2 times in this for loop
                     sum += doubleArray[i][closeCsvColumn] - doubleArray[row][closeCsvColumn];
-                    transactionCount++;
+                    badTransactionsCount++;
                     break;
                 }
             }
@@ -249,11 +252,7 @@ void logic2(double** doubleArray){
     }
 
     // print summary to console:
-    average = sum / transactionCount;
-    cout << endl << "summary:" << endl;
-    cout << "sum: " << sum << endl
-            << "average: " << average << endl
-            << "transactionCount: " << transactionCount << endl;
+    printSummary();
     
     // copy input to output with a little or no change
     output << "index";
@@ -274,4 +273,15 @@ void logic2(double** doubleArray){
     // close output file streams
     output.close();
     result.close();
+}
+
+void printSummary(){
+    transactionsCount = goodTransactionsCount + badTransactionsCount;
+    average = sum / transactionsCount;
+    successRate = static_cast<double>(goodTransactionsCount) / transactionsCount * 100;
+    cout << endl << "summary:" << endl;
+    cout << "\t" << "sum: " << sum << endl
+            << "\t" << "average: " << average << endl
+            << "\t" << "successRate: " <<successRate << " %" << endl
+            << "\t" << "transactionsCount: " << transactionsCount << endl;
 }
