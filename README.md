@@ -1,1 +1,4 @@
-run the main.exe file
+steps:
+  1. import repository to replit.com
+  2. chmod 755 ./app
+  3. ./app
