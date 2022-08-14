@@ -33,4 +33,10 @@
     double percentageAverage = 0;
     double logicScore = 0;
 
+    // experiment cases
+    int N_arr[] = {5};
+    int upMarginPercentage_arr[] = {4};
+    int downMarginPercentage_arr[] = {2};
+    int logicNumber_arr[] = {1, 2};
+
 #endif

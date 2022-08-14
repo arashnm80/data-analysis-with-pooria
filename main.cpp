@@ -6,14 +6,14 @@
 using namespace std;
 
 void test();
-void initializeVariables();
+void initialize();
 void getHeaders(string& firstLine);
 void logic(double** arr, int logicNumber);
 void printSummary();
 
 int main(){
     // optional function to change some variables
-    initializeVariables();
+    initialize();
 
     // create double array
     double** arr = new double*[maxRows];
@@ -53,13 +53,20 @@ int main(){
     // close input file stream
     input.close();
 
-    // try our logics
-    cout << endl << "which logic you want to try?" << endl
-            << "1. intertwined transactions" << endl
-            << "2. separate transactions" << endl << endl;
-    cin >> logicNumber;
-    cin.ignore();
-    logic(arr, logicNumber);
+    // try our experiments
+    for(auto & a : N_arr){
+        for(auto & b : upMarginPercentage_arr){
+            for(auto & c : downMarginPercentage_arr){
+                for(auto & d : logicNumber_arr){
+                    N = a;
+                    upMarginPercentage = b;
+                    downMarginPercentage = c;
+                    logicNumber = d;
+                    logic(arr, logicNumber);
+                }
+            }
+        }
+    }
 
     // delete double array
     for(int i{0}; i < maxRows; i++){
@@ -81,27 +88,7 @@ void test(){
     cout << "volume " << volumeCsvColumn << endl;
 }
 
-void initializeVariables(){
-    int i;
-    cout << "do you want to change any variables?" << endl
-            << "1. yes" << endl
-            << "2. no" << endl << endl;
-    cin >> i;
-    if(1 == i){
-        cout << "enter value for variables below:" << endl;
-        cout << "N: ";
-        cin >> N;
-        cout << "upMargin: ";
-        cin >> upMargin;
-        cout << "downMargin: ";
-        cin >> downMargin;
-    }
-
-    cout << endl;
-    cout << "N = " << N << endl;
-    cout << "upMargin = " << upMargin << endl;
-    cout << "downMargin = " << downMargin << endl;
-
+void initialize(){
     ofstream summary;
     summary.open(filesPath + summaryFileName);
     summary << "N"
@@ -150,8 +137,10 @@ void getHeaders(string& firstLine){
 
 void logic(double** arr, int logicNumber){
     // precalculations
-    upMarginPercentage = static_cast<int>((upMargin * 100) + 0.5);
-    downMarginPercentage = static_cast<int>((downMargin * 100) + 0.5);
+    upMargin = static_cast<double>(upMarginPercentage) / 100;
+    downMargin = static_cast<double>(downMarginPercentage) / 100;
+    // upMarginPercentage = static_cast<int>((upMargin * 100) + 0.5);
+    // downMarginPercentage = static_cast<int>((downMargin * 100) + 0.5);
 
     // open output file streams
     ofstream output;
