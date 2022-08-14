@@ -8,6 +8,7 @@
     #include <fstream>
     #include <filesystem>
     #include <unistd.h>
+    #include <cmath>
 
     // my headers
     #include "include/file.hpp"

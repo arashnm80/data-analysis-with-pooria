@@ -1,3 +1,5 @@
+// https://github.com/arashnm80/data-analysis-with-pooria.git
+
 #include "headers.hpp"
 #include "variables.hpp"
 
@@ -6,8 +8,7 @@ using namespace std;
 void test();
 void initializeVariables();
 void getHeaders(string& firstLine);
-void logic1(double** doubleArray);
-void logic2(double** doubleArray);
+void logic(double** arr, int logicNumber);
 void printSummary();
 
 int main(){
@@ -15,9 +16,9 @@ int main(){
     initializeVariables();
 
     // create double array
-    double** doubleArray = new double*[maxRows];
+    double** arr = new double*[maxRows];
     for(int i{0}; i < maxRows; i++){
-        doubleArray[i] = new double[maxColumns];
+        arr[i] = new double[maxColumns];
     }
     
     // open input file stream
@@ -38,14 +39,14 @@ int main(){
         item.clear();
         for(auto &ch : line){
             if(',' == ch){
-                doubleArray[rows][currentColumn] = stod(item);
+                arr[rows][currentColumn] = stod(item);
                 currentColumn++;
                 item.clear();
             }else if('\r' != ch){
                 item += ch;
             }
         }
-        doubleArray[rows][currentColumn] = stod(item); // for last item in row which doesn't have comma
+        arr[rows][currentColumn] = stod(item); // for last item in row which doesn't have comma
         rows++;
     }
     
@@ -53,24 +54,18 @@ int main(){
     input.close();
 
     // try our logics
-    cout << endl << "which logic you want to try? (enter from 1 to 2)" << endl;
-    int logicNumber;
+    cout << endl << "which logic you want to try?" << endl
+            << "1. intertwined transactions" << endl
+            << "2. separate transactions" << endl << endl;
     cin >> logicNumber;
     cin.ignore();
-    switch(logicNumber){
-        case 1:
-            logic1(doubleArray); // mixed transactions
-            break;
-        case 2:
-            logic2(doubleArray); // serparate transactions
-            break;    
-    }
+    logic(arr, logicNumber);
 
     // delete double array
     for(int i{0}; i < maxRows; i++){
-        delete[] doubleArray[i];
+        delete[] arr[i];
     }
-    delete[] doubleArray;
+    delete[] arr;
 
     cout << "\ndone. press enter to exit...";
     cin.ignore();
@@ -88,7 +83,9 @@ void test(){
 
 void initializeVariables(){
     int i;
-    cout << "do you want to change any variables? (type 1 for yes and 0 for no)" << endl;
+    cout << "do you want to change any variables?" << endl
+            << "1. yes" << endl
+            << "2. no" << endl << endl;
     cin >> i;
     if(1 == i){
         cout << "enter value for variables below:" << endl;
@@ -104,6 +101,18 @@ void initializeVariables(){
     cout << "N = " << N << endl;
     cout << "upMargin = " << upMargin << endl;
     cout << "downMargin = " << downMargin << endl;
+
+    ofstream summary;
+    summary.open(filesPath + summaryFileName);
+    summary << "N"
+        << ',' << "upMarginPercentage"
+        << ',' << "downMarginPercentage"
+        << ',' << "logicNumber"
+        << ',' << "percentageAverage"
+        << ',' << "transactionsCount"
+        << ',' << "logicScore"
+        << endl;
+    summary.close();
 }
 
 void getHeaders(string& firstLine){
@@ -139,43 +148,60 @@ void getHeaders(string& firstLine){
     }
 }
 
-void logic1(double** doubleArray){
+void logic(double** arr, int logicNumber){
+    // precalculations
+    upMarginPercentage = static_cast<int>((upMargin * 100) + 0.5);
+    downMarginPercentage = static_cast<int>((downMargin * 100) + 0.5);
+
     // open output file streams
     ofstream output;
     output.open(filesPath + outputFileName);
+    string resultFileName = resultsPath + to_string(N)
+            + '_' + to_string(upMarginPercentage)
+            + '_' + to_string(downMarginPercentage)
+            + '_' + to_string(logicNumber);
     ofstream result;
-    result.open(filesPath + resultFileName);
+    result.open(resultFileName);
 
     // check this logic for all items
-    sum = 0;
-    goodTransactionsCount = 0;
-    badTransactionsCount = 0;
-    result << "status,enter row,exit row,enter price,exit price,difference" << endl;
+    percentageSum = 0;
+    transactionsCount = 0;
+    result << "status,enter row,exit row,enter price,exit price,percentage" << endl;
     for(int row{N}; row < rows; row++){
-        double maxHigh = doubleArray[row - N][highCsvColumn];
-        double minLow = doubleArray[row - N][lowCsvColumn];
+        double maxHigh = arr[row - N][highCsvColumn];
+        double minLow = arr[row - N][lowCsvColumn];
         for(int i{row - N}; i < row; i++){
-            if(doubleArray[i][highCsvColumn] > maxHigh){
-                maxHigh = doubleArray[i][highCsvColumn];
+            if(arr[i][highCsvColumn] > maxHigh){
+                maxHigh = arr[i][highCsvColumn];
             }
-            if(doubleArray[i][lowCsvColumn] < minLow){
-                minLow = doubleArray[i][lowCsvColumn];
+            if(arr[i][lowCsvColumn] < minLow){
+                minLow = arr[i][lowCsvColumn];
             }
         }
-        if(doubleArray[row][closeCsvColumn] > maxHigh){
-            // enter transaction
-            for(int i = row + 1; i < rows; i++){
-                if(doubleArray[i][closeCsvColumn] > maxHigh * (1 + upMargin) 
-                    && doubleArray[i][closeCsvColumn] > doubleArray[row][closeCsvColumn]){
-                    result << "+," << row << ',' << i << ',' << doubleArray[row][closeCsvColumn] << ',' << doubleArray[i][closeCsvColumn] << ',' << doubleArray[i][closeCsvColumn] - doubleArray[row][closeCsvColumn] << endl;
-                    sum += doubleArray[i][closeCsvColumn] - doubleArray[row][closeCsvColumn];
-                    goodTransactionsCount++;
-                    break;
-                }else if(doubleArray[i][closeCsvColumn] < minLow * (1 - downMargin)
-                    && doubleArray[i][closeCsvColumn] < doubleArray[row][closeCsvColumn]){
-                    result << "-," << row << ',' << i << ',' << doubleArray[row][closeCsvColumn] << ',' << doubleArray[i][closeCsvColumn] << ',' << doubleArray[i][closeCsvColumn] - doubleArray[row][closeCsvColumn] << endl;
-                    sum += doubleArray[i][closeCsvColumn] - doubleArray[row][closeCsvColumn];
-                    badTransactionsCount++;
+        if(arr[row][closeCsvColumn] > maxHigh){ // start transaction here
+            bool exitFlag = false;
+            for(int i = row + 1; i < rows; i++){ // check for transaction's end condition
+                if(arr[i][closeCsvColumn] > maxHigh * (1 + upMargin) 
+                    && arr[i][closeCsvColumn] > arr[row][closeCsvColumn]){
+                        exitFlag = true;
+                }else if(arr[i][closeCsvColumn] < minLow * (1 - downMargin)
+                    && arr[i][closeCsvColumn] < arr[row][closeCsvColumn]){
+                        exitFlag = true;
+                }
+                if(exitFlag){
+                    double percentage = ((arr[i][closeCsvColumn] / arr[row][closeCsvColumn]) - 1) * 100;
+                    result << (percentage > 0 ? '+' : '-')
+                            << ',' << row // transaction's enter index
+                            << ',' << i // transaction's exit index
+                            << ',' << arr[row][closeCsvColumn]
+                            << ',' << arr[i][closeCsvColumn]
+                            << ',' << percentage
+                            << endl;
+                    percentageSum += percentage;
+                    transactionsCount++;                 
+                    if(2 == logicNumber){
+                        row = i + 1;
+                    }
                     break;
                 }
             }
@@ -196,76 +222,7 @@ void logic1(double** doubleArray){
             if(0 == column){
                 output << row;
             }
-            output << ',' << doubleArray[row][column];
-        }
-        output << endl;
-    }
-
-    // close output file streams
-    output.close();
-    result.close();
-}
-
-void logic2(double** doubleArray){
-    // open output file streams
-    ofstream output;
-    output.open(filesPath + outputFileName);
-    ofstream result;
-    result.open(filesPath + resultFileName);
-
-    // check this logic for all items
-    sum = 0;
-    goodTransactionsCount = 0;
-    badTransactionsCount = 0;
-    result << "status,enter row,exit row,enter price,exit price,difference" << endl;
-    for(int row{N}; row < rows; row++){
-        double maxHigh = doubleArray[row - N][highCsvColumn];
-        double minLow = doubleArray[row - N][lowCsvColumn];
-        for(int i{row - N}; i < row; i++){
-            if(doubleArray[i][highCsvColumn] > maxHigh){
-                maxHigh = doubleArray[i][highCsvColumn];
-            }
-            if(doubleArray[i][lowCsvColumn] < minLow){
-                minLow = doubleArray[i][lowCsvColumn];
-            }
-        }
-        if(doubleArray[row][closeCsvColumn] > maxHigh){
-            // enter transaction
-            for(int i = row + 1; i < rows; i++){
-                if(doubleArray[i][closeCsvColumn] > maxHigh * (1 + upMargin) 
-                    && doubleArray[i][closeCsvColumn] > doubleArray[row][closeCsvColumn]){
-                    result << "+," << row << ',' << i << ',' << doubleArray[row][closeCsvColumn] << ',' << doubleArray[i][closeCsvColumn] << ',' << doubleArray[i][closeCsvColumn] - doubleArray[row][closeCsvColumn] << endl;
-                    row = i + 1; // all of difference bewteen logic 2 and 1 is in this part which is written 2 times in this for loop
-                    sum += doubleArray[i][closeCsvColumn] - doubleArray[row][closeCsvColumn];
-                    goodTransactionsCount++;
-                    break;
-                }else if(doubleArray[i][closeCsvColumn] < minLow * (1 - downMargin)
-                    && doubleArray[i][closeCsvColumn] < doubleArray[row][closeCsvColumn]){
-                    result << "-," << row << ',' << i << ',' << doubleArray[row][closeCsvColumn] << ',' << doubleArray[i][closeCsvColumn] << ',' << doubleArray[i][closeCsvColumn] - doubleArray[row][closeCsvColumn] << endl;
-                    row = i + 1; // all of difference bewteen logic 2 and 1 is in this part which is written 2 times in this for loop
-                    sum += doubleArray[i][closeCsvColumn] - doubleArray[row][closeCsvColumn];
-                    badTransactionsCount++;
-                    break;
-                }
-            }
-        }
-    }
-
-    // print summary to console:
-    printSummary();
-    
-    // copy input to output with a little or no change
-    output << "index";
-    for(int i{0}; i < columns; i++){
-        output << ',' << csvHeaders[i];
-    }
-    output << endl;
-    for(int row{0}; row < rows; row++){
-        for(int column{0}; column < columns; column++){
-            if(0 == column){
-                output << row;
-            }
-            output << ',' << doubleArray[row][column];
+            output << ',' << arr[row][column];
         }
         output << endl;
     }
@@ -276,12 +233,19 @@ void logic2(double** doubleArray){
 }
 
 void printSummary(){
-    transactionsCount = goodTransactionsCount + badTransactionsCount;
-    average = sum / transactionsCount;
-    successRate = static_cast<double>(goodTransactionsCount) / transactionsCount * 100;
-    cout << endl << "summary:" << endl;
-    cout << "\t" << "sum: " << sum << endl
-            << "\t" << "average: " << average << endl
-            << "\t" << "successRate: " <<successRate << " %" << endl
-            << "\t" << "transactionsCount: " << transactionsCount << endl;
+    ofstream summary;
+    summary.open(filesPath + summaryFileName, ios::app);
+
+    percentageAverage = percentageSum / transactionsCount;
+    logicScore = percentageAverage * transactionsCount;
+    summary << N
+            << ',' << upMarginPercentage
+            << ',' << downMarginPercentage
+            << ',' << logicNumber
+            << ',' << percentageAverage
+            << ',' << transactionsCount
+            << ',' << logicScore
+            << endl;
+
+    summary.close();
 }
