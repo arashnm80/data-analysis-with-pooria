@@ -1,0 +1,1 @@
+1. change min and max calculation method to deque mode which is way faster
