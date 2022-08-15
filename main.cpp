@@ -148,7 +148,8 @@ void logic(double** arr, int logicNumber){
     // open output file streams
     ofstream output;
     output.open(filesPath + outputFileName);
-    string resultFileName = resultsPath + to_string(N)
+    string resultFileName = resultsPath + "result"
+            + '_' + to_string(N)
             + '_' + to_string(upMarginPercentage)
             + '_' + to_string(downMarginPercentage)
             + '_' + to_string(logicNumber)
