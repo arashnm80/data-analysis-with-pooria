@@ -1,5 +1,3 @@
-// https://github.com/arashnm80/data-analysis-with-pooria.git
-
 #include "headers.hpp"
 #include "variables.hpp"
 
