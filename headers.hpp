@@ -9,6 +9,7 @@
     #include <filesystem>
     #include <unistd.h>
     #include <cmath>
+    #include <chrono>
 
     // my headers
     #include "include/file.hpp"

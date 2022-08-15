@@ -12,6 +12,9 @@ void logic(double** arr, int logicNumber);
 void printSummary();
 
 int main(){
+    // start timer
+    auto start = chrono::high_resolution_clock::now();
+
     // optional function to change some variables
     initialize();
 
@@ -74,8 +77,10 @@ int main(){
     }
     delete[] arr;
 
-    cout << "\ndone. press enter to exit...";
-    cin.ignore();
+    // stop timer
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::seconds>(stop - start);
+    cout << "duration: " << duration.count() << " seconds.\n";
 }
 
 void test(){
@@ -139,8 +144,6 @@ void logic(double** arr, int logicNumber){
     // precalculations
     upMargin = static_cast<double>(upMarginPercentage) / 100;
     downMargin = static_cast<double>(downMarginPercentage) / 100;
-    // upMarginPercentage = static_cast<int>((upMargin * 100) + 0.5);
-    // downMarginPercentage = static_cast<int>((downMargin * 100) + 0.5);
 
     // open output file streams
     ofstream output;
@@ -185,7 +188,7 @@ void logic(double** arr, int logicNumber){
                             << ',' << arr[row][closeCsvColumn]
                             << ',' << arr[i][closeCsvColumn]
                             << ',' << percentage
-                            << endl;
+                            << '\n';
                     percentageSum += percentage;
                     transactionsCount++;                 
                     if(2 == logicNumber){
@@ -234,7 +237,14 @@ void printSummary(){
             << ',' << percentageAverage
             << ',' << transactionsCount
             << ',' << logicScore
-            << endl;
+            << '\n';
 
     summary.close();
+
+    cout << N
+            << '_' << upMarginPercentage
+            << '_' << downMarginPercentage
+            << '_' << logicNumber
+            << " done"
+            << '\n';
 }

@@ -34,9 +34,9 @@
     double logicScore = 0;
 
     // experiment cases
-    int N_arr[] = {5};
-    int upMarginPercentage_arr[] = {4};
-    int downMarginPercentage_arr[] = {2};
+    int N_arr[] = {5, 10, 20};
+    int upMarginPercentage_arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int downMarginPercentage_arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     int logicNumber_arr[] = {1, 2};
 
 #endif
