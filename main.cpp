@@ -151,7 +151,8 @@ void logic(double** arr, int logicNumber){
     string resultFileName = resultsPath + to_string(N)
             + '_' + to_string(upMarginPercentage)
             + '_' + to_string(downMarginPercentage)
-            + '_' + to_string(logicNumber);
+            + '_' + to_string(logicNumber)
+            + ".csv";
     ofstream result;
     result.open(resultFileName);
 
