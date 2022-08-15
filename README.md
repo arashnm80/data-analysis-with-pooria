@@ -10,7 +10,7 @@ git clone https://github.com/arashnm80/stock-and-crypto-price-analysis.git
 ```
 rm ./files/results/*
 ```
-3. change experiment cases in variables.hpp to your desired ones, for example:
+3. change experiment cases in `variables.hpp` to your desired ones, for example:
 ```
 int N_arr[] = {5, 10};
 int upMarginPercentage_arr[] = {1, 2, 3, 4, 5};
