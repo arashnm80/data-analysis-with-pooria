@@ -1,4 +1,4 @@
-// last edit: 2022-08-05
+// last edit: 2022-08-15
 
 #include <fstream>
 #include <filesystem>
@@ -34,6 +34,9 @@ std::string currentFolderPath(int mode = 1){ // help source: https://www.delftst
         // case 2: // directory with double backslashes and outside double quotation marks
         //     return current_path();
         //     break;
+        case 2: // best way to get current path, available from c++17
+            return std::filesystem::current_path();
+            break;
         default:
             std::cout << "error on currentFolderPath()" << std::endl;
             return std::string("error on currentFolderPath()");

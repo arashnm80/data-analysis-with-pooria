@@ -82,13 +82,7 @@ int main(){
 }
 
 void test(){
-    cout << "date " << dateCsvColumn << endl;
-    cout << "time " << timeCsvColumn << endl;
-    cout << "open " << openCsvColumn << endl;
-    cout << "high " << highCsvColumn << endl;
-    cout << "low " << lowCsvColumn << endl;
-    cout << "close " << closeCsvColumn << endl;
-    cout << "volume " << volumeCsvColumn << endl;
+    cout << filesystem::current_path() << endl;
 }
 
 void initialize(){
