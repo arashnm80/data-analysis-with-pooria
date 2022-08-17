@@ -15,7 +15,13 @@ std::string fileToString(std::string address){
 }
 
 std::string currentFolderPath(){
-    return std::filesystem::current_path();
+    std::stringstream s;
+    s << std::filesystem::current_path();
+    std::string out = s.str();
+    if('\"' == *out.begin()){ // to handle outside quotation marks which current_path() returns in windows os
+        out = out.substr(1, out.size() - 2);
+    }
+    return out;
 }
 
 // // no need to this function:
