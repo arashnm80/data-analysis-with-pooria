@@ -165,6 +165,9 @@ void logic(double** arr, int logicNumber){
             }
         }
         if(arr[row][closeCsvColumn] > maxHigh){ // start transaction here
+            // quick fix: set maxHigh and minLow to start transaction in 2 next lines. to-do: clean the code later
+                maxHigh = arr[row][closeCsvColumn];
+                minLow = arr[row][closeCsvColumn];
             bool exitFlag = false;
             for(int i = row + 1; i < rows; i++){ // check for transaction's end condition
                 if(arr[i][closeCsvColumn] > maxHigh * (1 + upMargin) 
