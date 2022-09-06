@@ -3,3 +3,4 @@
 3. perform program on limited range of input file
 4. percentage is calculated twice (my idea: calculate percentage at the start of loop, pooria idea: calculate border of exit from upmargin and downmargin at the start of the loop)
 5. maxHigh and minLow are set to start transaction. to-do: clean its mess later
+6. ignore certain useless states like 2 percent upMargin and 10 percent downMargin
